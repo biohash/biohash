@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 
+#include "test_context.hpp"
+
+
 namespace biohash {
 namespace test {
 
@@ -16,6 +19,8 @@ public:
 
     void run();
 
+    void report();
+
 private:
     std::vector<TestInstance*> m_tests;
 
@@ -26,19 +31,21 @@ TestInstances& get_default_test_instances();
 
 
 
-// An individual test instance. A test instance registers itself at
-// construction.
+// An abstract base class for test instances. A test instance registers itself
+// at construction.
 class TestInstance {
 public:
 
     TestInstance(TestInstances& test_instances, const char* name);
 
+    virtual ~TestInstance() = default;
+
     const char* name;
 
-    void run();
+    virtual void run(TestContext& test_context) const = 0;
 
 private:
-
+    uint64_t m_check_cnt = 0;
 };
 
 }

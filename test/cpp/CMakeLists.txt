@@ -4,6 +4,7 @@ set(TEST_SOURCES
 
 set(TEST_UTIL_SOURCES
     util/test_instance.cpp
+    util/test_context.cpp
 )
 
 set(TEST_MAIN_SOURCES
@@ -12,3 +13,4 @@ set(TEST_MAIN_SOURCES
 
 add_executable(BiohashTests ${TEST_UTIL_SOURCES} ${TEST_SOURCES} ${TEST_MAIN_SOURCES})
 set_target_properties(BiohashTests PROPERTIES OUTPUT_NAME biohash-tests)
+target_link_libraries(BiohashTests Biohash)

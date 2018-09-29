@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "util/test_instance.hpp"
+#include "util/test.hpp"
 
 using namespace biohash::test;
 

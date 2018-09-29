@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include "test_instance.hpp"
+#include "test_context.hpp"
 
 using namespace biohash;
 using namespace biohash::test;
@@ -17,9 +18,10 @@ void TestInstances::register_test(TestInstance* instance)
 void TestInstances::run()
 {
     sort_tests_by_name();
+    TestContext test_context;
     for (size_t i = 0; i < m_tests.size(); ++i) {
         std::cout << "Running test " << i << ", name = " << m_tests[i]->name << "\n";
-        m_tests[i]->run();
+        m_tests[i]->run(test_context);
     }
 }
 
@@ -46,8 +48,8 @@ TestInstance::TestInstance(TestInstances& test_instances, const char* name):
     test_instances.register_test(this);
 }
 
-void TestInstance::run()
-{
-    std::cout << "Run, name = " << name << "\n";
-}
-
+//void TestInstance::run()
+//{
+//    std::cout << "Run, name = " << name << "\n";
+//}
+//
