@@ -1,6 +1,6 @@
 #pragma once
 
-#define BIOHASH_ASSERT(expression) ((expression) ? static_cast<void>(0): biohash::biohash_assert(#expression, __FILE__, __LINE__))
+#define ASSERT(expression) ((expression) ? static_cast<void>(0): biohash::biohash_assert(#expression, __FILE__, __LINE__))
 
 namespace biohash {
 

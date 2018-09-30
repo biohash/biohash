@@ -3,8 +3,8 @@ set(TEST_SOURCES
 )
 
 set(TEST_UTIL_SOURCES
-    util/test_instance.cpp
-    util/test_context.cpp
+    util/test_base.cpp
+    util/test_runner.cpp
 )
 
 set(TEST_MAIN_SOURCES
