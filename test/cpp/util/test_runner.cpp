@@ -14,8 +14,6 @@ TestRunner::TestRunner(const std::vector<TestBase*>& tests, const Config& config
     m_config {config},
     m_indices {calculate_indices(tests, config)}
 {
-    std::cerr << "m_indices.size() = " << m_indices.size() << "\n";
-
     m_test_results.resize(m_indices.size());
 }
 
