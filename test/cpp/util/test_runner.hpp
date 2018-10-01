@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include <mutex>
 
@@ -17,17 +18,27 @@ namespace test {
 // results to std::cerr.
 class TestRunner {
 public:
-    TestRunner(const std::vector<TestBase*>& tests);
+
+    struct Config {
+        std::string prefix;
+    };
+
+    TestRunner(const std::vector<TestBase*>& tests, const Config& config);
 
     bool run();
     void report();
 
 private:
     const std::vector<TestBase*>& m_tests;
+    const Config m_config;
 
-    // The mutex protects m_test_ndx.
+    // Indices into m_tests. The tests in m_indices will be run.  m_indices is
+    // calculated by filtering and sorting.
+    const std::vector<size_t> m_indices;
+
+    // The mutex protects m_next_ndx.
     std::mutex m_mutex;
-    size_t m_test_ndx = 0;
+    size_t m_next_ndx = 0;
 
     struct TestResult {
         size_t thread_ndx;
@@ -39,6 +50,9 @@ private:
     std::vector<TestResult> m_test_results;
 
     void run_worker(size_t thread_ndx);
+
+    static std::vector<size_t> calculate_indices(const std::vector<TestBase*>& tests,
+                                                 const Config& config);
 };
 
 }

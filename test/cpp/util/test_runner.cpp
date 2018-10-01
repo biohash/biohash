@@ -9,22 +9,18 @@ using namespace biohash;
 using namespace biohash::test;
 
 
-TestRunner::TestRunner(const std::vector<TestBase*>& tests):
-    m_tests {tests}
+TestRunner::TestRunner(const std::vector<TestBase*>& tests, const Config& config):
+    m_tests {tests},
+    m_config {config},
+    m_indices {calculate_indices(tests, config)}
 {
-    m_test_results.resize(tests.size());
+    std::cerr << "m_indices.size() = " << m_indices.size() << "\n";
+
+    m_test_results.resize(m_indices.size());
 }
 
 bool TestRunner::run()
 {
-//    sort_tests_by_name();
-//{
-//    std::sort(m_tests.begin(), m_tests.end(), [](const TestInstance* a, const TestInstance* b) {
-//        return std::strcmp(a->name, b->name) < 0;
-//    });
-//}
-
-
     int nthreads = 4;
     std::vector<std::thread> threads;
 
@@ -34,7 +30,7 @@ bool TestRunner::run()
     for (std::thread& t: threads)
        t.join();
 
-    ASSERT(m_test_ndx == m_tests.size());
+    ASSERT(m_next_ndx == m_indices.size());
 
     bool success = true;
     for (const TestResult& result: m_test_results) {
@@ -54,15 +50,15 @@ void TestRunner::run_worker(size_t thread_ndx)
         {
             // Acquire the next test index.
             std::lock_guard<std::mutex> lock {m_mutex};
-            ndx = m_test_ndx;
-            ASSERT(ndx <= m_tests.size());
-            if (ndx == m_tests.size())
+            ndx = m_next_ndx;
+            ASSERT(ndx <= m_indices.size());
+            if (ndx == m_indices.size())
                 break;
             else
-                ++m_test_ndx;
+                ++m_next_ndx;
         }
 
-        TestBase* test = m_tests[ndx];
+        TestBase* test = m_tests[m_indices[ndx]];
         
         TestBase::Context context;
         test->run(context);
@@ -73,6 +69,25 @@ void TestRunner::run_worker(size_t thread_ndx)
         result.file = test->file;
         result.failed_checks = context.failed_checks;
     }
+}
+
+std::vector<size_t> TestRunner::calculate_indices(const std::vector<TestBase*>& tests,
+                                                  const Config& config)
+{
+    std::vector<size_t> indices;
+    for (size_t i = 0; i < tests.size(); ++i) {
+        bool keep = std::strncmp(config.prefix.data(), tests[i]->name, config.prefix.size()) == 0;
+
+        if (keep)
+            indices.push_back(i);
+    }
+
+    // sort_tests_by_name();
+    std::sort(indices.begin(), indices.end(), [&](size_t a, size_t b) {
+        return std::strcmp(tests[a]->name, tests[b]->name) < 0;
+    });
+
+    return indices;
 }
 
 void TestRunner::report()
