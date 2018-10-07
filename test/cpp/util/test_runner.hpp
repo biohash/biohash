@@ -4,6 +4,8 @@
 #include <vector>
 #include <mutex>
 
+#include <biohash/log.hpp>
+
 #include "test_base.hpp"
 
 namespace biohash {
@@ -20,7 +22,10 @@ class TestRunner {
 public:
 
     struct Config {
-        std::string prefix;
+        int log_fildes;
+        log::Level log_level;
+        std::string prefix; // Filtering test by prefix of name.
+        long threads = 1;
     };
 
     TestRunner(const std::vector<TestBase*>& tests, const Config& config);

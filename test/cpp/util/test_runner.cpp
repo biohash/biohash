@@ -1,5 +1,7 @@
 #include <iostream>
+#include <cstring>
 #include <thread>
+#include <unistd.h>
 
 #include "test_runner.hpp"
 
@@ -19,10 +21,15 @@ TestRunner::TestRunner(const std::vector<TestBase*>& tests, const Config& config
 
 bool TestRunner::run()
 {
-    int nthreads = 4;
+    std::cerr
+        << "Tests starting.\n"
+        << "Number of tests = " << m_tests.size() << "\n"
+        << "Number of threads = " << m_config.threads << "\n"
+        << "\n";
+
     std::vector<std::thread> threads;
 
-    for (int i = 0; i < nthreads; ++i)
+    for (int i = 0; i < m_config.threads; ++i)
         threads.emplace_back(&TestRunner::run_worker, this, i);
 
     for (std::thread& t: threads)
@@ -43,6 +50,9 @@ bool TestRunner::run()
 
 void TestRunner::run_worker(size_t thread_ndx)
 {
+    log::StderrSink sink;
+    log::Logger logger {std::to_string(thread_ndx), sink, m_config.log_level};
+
     while (true) {
         size_t ndx;
         {
@@ -58,7 +68,7 @@ void TestRunner::run_worker(size_t thread_ndx)
 
         TestBase* test = m_tests[m_indices[ndx]];
         
-        TestBase::Context context;
+        TestBase::Context context {logger};
         test->run(context);
 
         TestResult& result = m_test_results[ndx];

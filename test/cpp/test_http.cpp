@@ -2,6 +2,7 @@
 
 #include "util/test.hpp"
 
+using namespace biohash;
 using namespace biohash::test;
 
 
@@ -19,4 +20,13 @@ TEST(http_1)
     CHECK(true);
     CHECK(false);
     CHECK(std::string {"abc"} == std::string {"def"});
+}
+
+TEST(http_2)
+{
+    log::Logger& logger = test_context.logger;
+    logger.fatal("Hello fatal, str = %s", "Interesting");
+    logger.info("Hello info, number = %d", 123);
+    logger.trace("Hello trace");
+
 }

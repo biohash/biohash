@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <biohash/log.hpp>
+
 namespace biohash {
 namespace test {
 
@@ -23,7 +25,10 @@ public:
     };
 
     struct Context {
+        log::Logger& logger;
         std::vector<Check> failed_checks;
+
+        Context(log::Logger& logger);
     };
 
     virtual void run(Context& test_context) const = 0;

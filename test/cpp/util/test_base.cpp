@@ -4,6 +4,11 @@
 using namespace biohash;
 using namespace biohash::test;
 
+TestBase::Context::Context(log::Logger& logger):
+    logger {logger}
+{
+}
+
 TestBase::TestBase(std::vector<TestBase*>& tests, const char* name,
                    const char* file):
     name {name},
