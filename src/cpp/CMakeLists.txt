@@ -1,5 +1,6 @@
 set(BIOHASH_SOURCES
-    biohash/foo.cpp
+    biohash/log.cpp
+    biohash/time.cpp
 )
 
 add_library(Biohash STATIC ${BIOHASH_SOURCES})
