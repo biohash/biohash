@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #define ASSERT(expression) ((expression) ? static_cast<void>(0): biohash::biohash_assert(#expression, __FILE__, __LINE__))
 
