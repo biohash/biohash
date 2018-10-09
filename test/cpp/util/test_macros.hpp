@@ -19,3 +19,5 @@ void TestBase_##NAME::run(Context& test_context) const
 
 
 #define CHECK(EXP) TestBase::check(test_context, EXP, __LINE__, #EXP)
+
+#define CHECK_EQUAL(A, B) TestBase::check_equal(test_context, A, B, __LINE__)

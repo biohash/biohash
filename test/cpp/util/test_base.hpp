@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sstream>
 #include <vector>
 
 #include <biohash/log.hpp>
@@ -21,7 +22,7 @@ public:
 
     struct Check {
         long line;
-        const char* text;
+        std::string text;
     };
 
     struct Context {
@@ -34,6 +35,17 @@ public:
     virtual void run(Context& test_context) const = 0;
 
     static void check(Context& test_context, bool cond, long line, const char* text);
+
+    template <typename T>
+    static void check_equal(Context& test_context, T a, T b, long line)
+    {
+        if (a != b) {
+            std::ostringstream os;
+            os << a << " == " << b;
+            check_failed(test_context, line, os.str().c_str());
+        }
+    }
+
     static void check_failed(Context& test_context, long line, const char* text);
 
 private:
