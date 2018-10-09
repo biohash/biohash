@@ -23,7 +23,7 @@ bool TestRunner::run()
 {
     std::cerr
         << "Tests starting.\n"
-        << "Number of tests = " << m_tests.size() << "\n"
+        << "Number of tests = " << m_indices.size() << "\n"
         << "Number of threads = " << m_config.threads << "\n"
         << "\n";
 
@@ -68,6 +68,8 @@ void TestRunner::run_worker(size_t thread_ndx)
 
         TestBase* test = m_tests[m_indices[ndx]];
         
+        logger.info("Running test %s", test->name);
+
         TestBase::Context context {logger};
         test->run(context);
 
@@ -85,7 +87,6 @@ std::vector<size_t> TestRunner::calculate_indices(const std::vector<TestBase*>& 
     std::vector<size_t> indices;
     for (size_t i = 0; i < tests.size(); ++i) {
         bool keep = std::strncmp(config.prefix.data(), tests[i]->name, config.prefix.size()) == 0;
-
         if (keep)
             indices.push_back(i);
     }
@@ -117,4 +118,6 @@ void TestRunner::report()
         for (const TestBase::Check& check: result.failed_checks)
             std::cerr << "  Check failed: line " << check.line << ", '" << check.text << "'\n";
     }
+    if (failed_tests_cnt == 0)
+        std::cerr << "\nSuccess\n";
 }
