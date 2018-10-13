@@ -3,6 +3,7 @@ set(BIOHASH_SOURCES
     biohash/time.cpp
     biohash/base64.cpp
     biohash/buffer.cpp
+    biohash/json.cpp
 )
 
 add_library(Biohash STATIC ${BIOHASH_SOURCES})

@@ -2,6 +2,7 @@ set(TEST_SOURCES
     test_base64.cpp
     test_http.cpp
     test_buffer.cpp
+    test_json.cpp
 )
 
 set(TEST_UTIL_SOURCES
