@@ -1,3 +1,4 @@
+#include <string.h>
 
 #include "test_base.hpp"
 
@@ -21,6 +22,15 @@ void TestBase::check(Context& test_context, bool cond, long line, const char* te
 {
     if (!cond)
         check_failed(test_context, line, text);
+}
+
+void TestBase::check_memcmp(Context& test_context, const void* a, const void* b, size_t n, long line)
+{
+    if (memcmp(a, b, n) != 0) {
+        std::string text = std::string {reinterpret_cast<const char*>(a), n} + " == "
+            + std::string {reinterpret_cast<const char*>(b), n};
+        check_failed(test_context, line, text.c_str());
+    }
 }
 
 void TestBase::check_failed(Context& test_context, long line, const char* text)
