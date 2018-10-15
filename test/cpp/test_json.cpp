@@ -21,7 +21,7 @@ TEST(json_token_number)
 
 TEST(json_token_string)
 {
-    unsigned char data[] = "Hello";
+    const char data[] = "Hello";
     size_t size = sizeof(data);
     Token token;
     token.type = Token::Type::String;
@@ -35,7 +35,7 @@ TEST(json_token_string)
 
 TEST(json_tokenizer_whitespace)
 {
-    unsigned char data[] = "\t\r \n  \r \t \n";
+    const char data[] = "\t\r \n  \r \t \n";
     size_t size = sizeof(data) - 1;
     Tokenizer tokenizer {data, size};
     CHECK(tokenizer.next().type == Token::Type::End);
@@ -43,7 +43,7 @@ TEST(json_tokenizer_whitespace)
 
 TEST(json_tokenizer_null)
 {
-    unsigned char data[] = "null";
+    const char data[] = "null";
     size_t size = sizeof(data) - 1;
     Tokenizer tokenizer {data, size};
     CHECK(tokenizer.next().type == Token::Type::Null);
@@ -52,7 +52,7 @@ TEST(json_tokenizer_null)
 
 TEST(json_tokenizer_true)
 {
-    unsigned char data[] = "true";
+    const char data[] = "true";
     size_t size = sizeof(data) - 1;
     Tokenizer tokenizer {data, size};
     CHECK(tokenizer.next().type == Token::Type::True);
@@ -61,7 +61,7 @@ TEST(json_tokenizer_true)
 
 TEST(json_tokenizer_false)
 {
-    unsigned char data[] = "false";
+    const char data[] = "false";
     size_t size = sizeof(data) - 1;
     Tokenizer tokenizer {data, size};
     CHECK(tokenizer.next().type == Token::Type::False);
@@ -70,7 +70,7 @@ TEST(json_tokenizer_false)
 
 TEST(json_tokenizer_number)
 {
-    unsigned char data[] = "123.45";
+    const char data[] = "123.45";
     size_t size = sizeof(data) - 1;
     Tokenizer tokenizer {data, size};
     Token token = tokenizer.next();
@@ -81,7 +81,7 @@ TEST(json_tokenizer_number)
 
 TEST(json_tokenizer_string)
 {
-    unsigned char data[] = "\"Biohash\"";
+    const char data[] = "\"Biohash\"";
     size_t size = sizeof(data) - 1;
     Tokenizer tokenizer {data, size};
     Token token = tokenizer.next();
@@ -116,7 +116,7 @@ TEST(json_tokenizer_numbers)
     size_t n = sizeof(json_numbers) / sizeof(json_numbers[0]);
 
     for (size_t i = 0; i < n; ++i) {
-        const unsigned char* data = reinterpret_cast<const unsigned char*>(json_numbers[i].json);
+        const char* data = json_numbers[i].json;
         const size_t size = strlen(json_numbers[i].json);
         long double value = json_numbers[i].value;
         Tokenizer tokenizer {data, size};
@@ -150,7 +150,7 @@ TEST(json_tokenizer_strings)
     size_t n = sizeof(json_strings) / sizeof(json_strings[0]);
 
     for (size_t i = 0; i < n; ++i) {
-        const unsigned char* data = reinterpret_cast<const unsigned char*>(json_strings[i].json);
+        const char* data = json_strings[i].json;
         const size_t size = strlen(json_strings[i].json);
         const char* value = json_strings[i].value;
         size_t value_size = strlen(value);
@@ -165,7 +165,7 @@ TEST(json_tokenizer_strings)
 
 TEST(json_tokenizer_multiple)
 {
-    const unsigned char data[] = "null \t truefalse \r { \n ][}\"str\"12.3-12.09 [";
+    const char data[] = "null \t truefalse \r { \n ][}\"str\"12.3-12.09 [";
     const size_t size = sizeof(data) - 1;
     Tokenizer tokenizer {data, size};
     Token token = tokenizer.next();
@@ -219,7 +219,7 @@ TEST(json_tokenizer_invalid)
 
     size_t n = sizeof(invalids) / sizeof(invalids[0]);
     for (size_t i = 0; i < n; ++i) {
-        const unsigned char* data = reinterpret_cast<const unsigned char*>(invalids[i]);
+        const char* data = invalids[i];
         size_t size = strlen(invalids[i]);
         Tokenizer tokenizer {data, size};
         while (tokenizer.next().type != Token::Type::Invalid);

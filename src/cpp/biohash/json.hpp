@@ -26,7 +26,7 @@ struct Token {
     union {
         long double number;
         struct {
-            const unsigned char* data;
+            const char* data;
             size_t size;
         } string;
 
@@ -36,7 +36,7 @@ struct Token {
 class Tokenizer {
 public:
 
-    Tokenizer(const unsigned char* data, size_t size);
+    Tokenizer(const char* data, size_t size);
 
     // The Tokenizer object keeps track of progress in cursor. By calling
     // next(), the next token will be emitted. When the end has been reached,
@@ -46,16 +46,16 @@ public:
     Token next();
 
 private:
-    const unsigned char* const end;
-    const unsigned char* cur;
+    const char* const end;
+    const char* cur;
 
     bool finished = false;
     bool invalid = false;
 
-    static bool is_whitespace(unsigned char c);
-    static bool is_digit(unsigned char c);
-    static bool is_hex(unsigned char c);
-    static double to_double(unsigned char c);
+    static bool is_whitespace(char c);
+    static bool is_digit(char c);
+    static bool is_hex(char c);
+    static double to_double(char c);
 
     Token parse_fixed(const char* fixed, Token::Type type);
     Token parse_number();

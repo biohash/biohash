@@ -8,7 +8,7 @@
 using namespace biohash;
 using namespace biohash::json;
 
-Tokenizer::Tokenizer(const unsigned char* data, size_t size):
+Tokenizer::Tokenizer(const char* data, size_t size):
     end {data + size},
     cur {data}
 {
@@ -87,22 +87,22 @@ Token Tokenizer::next()
 
 }
 
-bool Tokenizer::is_whitespace(unsigned char c)
+bool Tokenizer::is_whitespace(char c)
 {
     return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 }
 
-bool Tokenizer::is_digit(unsigned char c)
+bool Tokenizer::is_digit(char c)
 {
     return c >= '0' && c <= '9';
 }
 
-bool Tokenizer::is_hex(unsigned char c)
+bool Tokenizer::is_hex(char c)
 {
     return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
 }
 
-double Tokenizer::to_double(unsigned char c)
+double Tokenizer::to_double(char c)
 {
     return static_cast<double>(c - '0');
 }
@@ -216,11 +216,11 @@ Token Tokenizer::parse_string()
     }
 
     bool escaped = false;
-    const unsigned char* str_begin = cur;
+    const char* str_begin = cur;
 
     while (cur != end) {
         if (!escaped) {
-            unsigned char c = *cur;
+            char c = *cur;
             if (c == '"') {
                 token.type = Token::Type::String;
                 token.payload.string.data = str_begin;
@@ -238,7 +238,7 @@ Token Tokenizer::parse_string()
             }
         }
         else {
-            unsigned char c = *cur;
+            char c = *cur;
             if (c == '"' || c == '\\' || c == '/' || c == 'b' || c == 'f'
                 || c == 'n' || c == 'r' || c == 't') {
                 escaped = false;
