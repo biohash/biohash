@@ -59,12 +59,12 @@ const char* invalids[] = {
 
 TEST(base64_encode)
 {
-    unsigned char result[10];
+    char result[10];
     size_t npairs = sizeof(pairs) / sizeof(Pair);
     for (size_t i = 0; i < npairs; ++i) {
         const Pair& pair = pairs[i];
         size_t decoded_size = pair.decoded_size;
-        const unsigned char* decoded_data = reinterpret_cast<const unsigned char*>(pair.decoded_data);
+        const char* decoded_data = pair.decoded_data;
         size_t encoded_size = strlen(pair.encoded_data);
         size_t encoded_size_0 = base64::encoded_size(decoded_size);
         CHECK_EQUAL(encoded_size_0, encoded_size);
@@ -77,11 +77,11 @@ TEST(base64_encode)
 
 TEST(base64_decode)
 {
-    unsigned char result[10];
+    char result[10];
     size_t npairs = sizeof(pairs) / sizeof(Pair);
     for (size_t i = 0; i < npairs; ++i) {
         const Pair& pair = pairs[i];
-        const unsigned char* encoded_data = reinterpret_cast<const unsigned char*>(pair.encoded_data);
+        const char* encoded_data = pair.encoded_data;
         size_t encoded_size = strlen(pair.encoded_data);
         size_t decoded_size = pair.decoded_size;
         size_t decoded_size_0 = base64::decoded_size(encoded_data, encoded_size);
@@ -102,19 +102,19 @@ TEST(base64_invalid)
         const char* encoded_data = invalids[i];
         const size_t encoded_size = std::strlen(encoded_data);
         ASSERT(encoded_size < 20);
-        unsigned char decoded_data[30];
+        char decoded_data[30];
         size_t decoded_size;
-        bool ret = base64::decode(reinterpret_cast<const unsigned char*>(encoded_data),
-                                  encoded_size, decoded_data, decoded_size);
+        bool ret = base64::decode(encoded_data, encoded_size,
+                                  decoded_data, decoded_size);
         CHECK(!ret);
     }
 }
 
 TEST(base64_random)
 {
-    unsigned char decoded_data_0[30];
-    unsigned char decoded_data_1[30];
-    unsigned char encoded_data[40];
+    char decoded_data_0[30];
+    char decoded_data_1[30];
+    char encoded_data[40];
 
     for (int i = 0; i < 20; ++i) {
         const size_t decoded_size_0 = arc4random_uniform(31);

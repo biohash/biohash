@@ -5,7 +5,7 @@
 
 using namespace biohash;
 
-static const unsigned char characters[64] = {
+static const char characters[64] = {
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
     'Q', 'R', 'S' ,'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
     'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
@@ -14,7 +14,7 @@ static const unsigned char characters[64] = {
 
 static const char pad = '=';
 
-static unsigned char character_to_index(unsigned char ch)
+static unsigned char character_to_index(char ch)
 {
     if (ch >= 'A' && ch <= 'Z')
         return ch - 'A';
@@ -39,7 +39,7 @@ size_t base64::encoded_size(size_t decoded_size)
     return ((decoded_size + 2) / 3) * 4;
 }
 
-size_t base64::decoded_size(const unsigned char* encoded_data,  size_t encoded_size)
+size_t base64::decoded_size(const char* encoded_data,  size_t encoded_size)
 {
     if (encoded_size == 0)
         return 0;
@@ -50,8 +50,8 @@ size_t base64::decoded_size(const unsigned char* encoded_data,  size_t encoded_s
     return 3 * (encoded_size / 4) - npads;
 }
 
-size_t base64::encode(const unsigned char* decoded_data,  size_t decoded_size,
-              unsigned char* encoded_data)
+size_t base64::encode(const char* decoded_data,  size_t decoded_size,
+                      char* encoded_data)
 {
     ASSERT(CHAR_BIT == 8);
     size_t quot = decoded_size / 3;
@@ -92,8 +92,8 @@ size_t base64::encode(const unsigned char* decoded_data,  size_t decoded_size,
     return ndx_out;
 }
 
-bool base64::decode(const unsigned char* encoded_data, size_t encoded_size,
-                    unsigned char* decoded_data, size_t& decoded_size)
+bool base64::decode(const char* encoded_data, size_t encoded_size,
+                    char* decoded_data, size_t& decoded_size)
 {
     ASSERT(CHAR_BIT == 8);
     if (encoded_size == 0) {
@@ -127,10 +127,10 @@ bool base64::decode(const unsigned char* encoded_data, size_t encoded_size,
             return false;
         unsigned char byte_0 = (ndx_0 << 2) | (ndx_1 >> 4);
         decoded_data[ndx_out++] = byte_0;
-        unsigned char ch_2 = encoded_data[ndx_in++];
+        char ch_2 = encoded_data[ndx_in++];
         ASSERT(encoded_data[ndx_in++] == pad);
         if (ch_2 != pad) {
-            unsigned char ndx_2 = character_to_index(ch_2);
+            char ndx_2 = character_to_index(ch_2);
             if ((ndx_2 & 0x03) != 0)
                 return false;
             unsigned char byte_1 = ((ndx_1 & 0x0f) << 4) | (ndx_2 >> 2);
