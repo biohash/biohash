@@ -4,6 +4,7 @@ set(BIOHASH_SOURCES
     biohash/base64.cpp
     biohash/buffer.cpp
     biohash/json.cpp
+    biohash/http.cpp
 )
 
 add_library(Biohash STATIC ${BIOHASH_SOURCES})
