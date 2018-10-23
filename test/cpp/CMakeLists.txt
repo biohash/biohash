@@ -3,6 +3,7 @@ set(TEST_SOURCES
     test_http.cpp
     test_buffer.cpp
     test_json.cpp
+    test_websocket.cpp
 )
 
 set(TEST_UTIL_SOURCES
