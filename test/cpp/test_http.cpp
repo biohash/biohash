@@ -6,7 +6,7 @@
 
 using namespace biohash;
 using namespace biohash::test;
-using MessageParser = http::MessageParser;
+using Message = http::Message;
 
 TEST(http_write_request_line)
 {
@@ -62,13 +62,13 @@ TEST(http_parser_0)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK(parser.header_user_agent == "CERN-LineMode/2.15 libwww/2.17b3");
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Request);
+    CHECK(parser.kind == Message::Kind::Request);
     CHECK_EQUAL(parser.content_length, 0);
     CHECK(parser.body == request + size);
     CHECK(parser.method == http::Method::GET);
@@ -84,12 +84,12 @@ TEST(http_parser_1)
         "abc";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Request);
+    CHECK(parser.kind == Message::Kind::Request);
     CHECK_EQUAL(parser.content_length, 3);
     CHECK(parser.body == request + size - 3);
     CHECK(parser.method == http::Method::POST);
@@ -110,12 +110,12 @@ TEST(http_parser_2)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Request);
+    CHECK(parser.kind == Message::Kind::Request);
     CHECK_EQUAL(parser.content_length, 0);
     CHECK(parser.method == http::Method::GET);
     CHECK(parser.request_target == "/chat");
@@ -134,12 +134,12 @@ TEST(http_parser_3)
         "\r\n";
     size_t size = sizeof(response) - 1;
 
-    MessageParser parser {MessageParser::Kind::Response, response, size};
+    Message parser {Message::Kind::Response, response, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Response);
+    CHECK(parser.kind == Message::Kind::Response);
     CHECK_EQUAL(parser.content_length, 0);
     CHECK(parser.status_code == 200);
     CHECK(parser.reason_phrase == "OK");
@@ -156,12 +156,12 @@ TEST(http_parser_4)
         "\r\n";
     size_t size = sizeof(response) - 1;
 
-    MessageParser parser {MessageParser::Kind::Response, response, size};
+    Message parser {Message::Kind::Response, response, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Response);
+    CHECK(parser.kind == Message::Kind::Response);
     CHECK_EQUAL(parser.content_length, 0);
     CHECK(parser.status_code == 101);
     CHECK(parser.reason_phrase == "Switching Protocols");
@@ -180,12 +180,12 @@ TEST(http_parser_5)
         "\r\n";
     size_t size = sizeof(response) - 1;
 
-    MessageParser parser {MessageParser::Kind::Response, response, size};
+    Message parser {Message::Kind::Response, response, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Response);
+    CHECK(parser.kind == Message::Kind::Response);
     CHECK_EQUAL(parser.content_length, 0);
     CHECK(parser.status_code == 101);
     CHECK(parser.reason_phrase == "Switching Protocols");
@@ -202,12 +202,12 @@ TEST(http_parser_6)
         "abc";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Request);
+    CHECK(parser.kind == Message::Kind::Request);
     CHECK_EQUAL(parser.content_length, 3);
     CHECK(parser.body == request + size - 3);
     CHECK(parser.method == http::Method::PUT);
@@ -222,12 +222,12 @@ TEST(http_parser_7)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Request);
+    CHECK(parser.kind == Message::Kind::Request);
     CHECK_EQUAL(parser.content_length, 0);
     CHECK(parser.body == request + size);
     CHECK(parser.method == http::Method::DELETE);
@@ -242,12 +242,12 @@ TEST(http_parser_8)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Request);
+    CHECK(parser.kind == Message::Kind::Request);
     CHECK_EQUAL(parser.content_length, 0);
     CHECK(parser.body == request + size);
     CHECK(parser.method == http::Method::TRACE);
@@ -262,12 +262,12 @@ TEST(http_parser_9)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == MessageParser::Kind::Request);
+    CHECK(parser.kind == Message::Kind::Request);
     CHECK_EQUAL(parser.content_length, 0);
     CHECK(parser.body == request + size);
     CHECK(parser.method == http::Method::HEAD);
@@ -282,7 +282,7 @@ TEST(http_parser_10)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
@@ -297,7 +297,7 @@ TEST(http_parser_11)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
@@ -313,7 +313,7 @@ TEST(http_parser_12)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(!parser.complete);
     CHECK(!parser.valid);
@@ -326,7 +326,7 @@ TEST(http_parser_13)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(!parser.complete);
     CHECK(!parser.valid);
@@ -340,7 +340,7 @@ TEST(http_parser_14)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(!parser.complete);
     CHECK(!parser.valid);
@@ -355,7 +355,7 @@ TEST(http_parser_15)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
@@ -374,12 +374,12 @@ TEST(http_parser_16)
         "abcdefg";
     size_t size = sizeof(request) - 1;
 
-    MessageParser parser {MessageParser::Kind::Request, request, size};
+    Message parser {Message::Kind::Request, request, size};
 
     CHECK(parser.complete);
     CHECK(parser.valid);
     CHECK_EQUAL(parser.message_size, size - 4);
-    CHECK(parser.kind == MessageParser::Kind::Request);
+    CHECK(parser.kind == Message::Kind::Request);
     CHECK_EQUAL(parser.content_length, 3);
     CHECK(parser.body == request + size - 7);
     CHECK(parser.method == http::Method::POST);

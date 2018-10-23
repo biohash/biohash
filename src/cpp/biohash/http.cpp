@@ -34,7 +34,7 @@ const char* http::reason_phrase(int status_code)
 {
     switch(status_code) {
         case 101:
-            return "Switching Protocol";
+            return "Switching Protocols";
         case 200:
             return "OK";
         case 400:
@@ -83,7 +83,16 @@ size_t http::write_header(char* buf, size_t size, const char* name, const char* 
     return rc + 1;
 }
 
-http::MessageParser::MessageParser(Kind kind, const char* buf, size_t buf_size):
+size_t http::write_header_end(char* buf, size_t size)
+{
+    if (size >= 2) {
+        *buf = '\r';
+        *(buf + 1) = '\n';
+    }
+    return 2;
+}
+
+http::Message::Message(Kind kind, const char* buf, size_t buf_size):
     kind {kind},
     buf {buf},
     buf_size {buf_size},
@@ -103,12 +112,12 @@ http::MessageParser::MessageParser(Kind kind, const char* buf, size_t buf_size):
     return;
 }
 
-bool http::MessageParser::parse_start_line()
+bool http::Message::parse_start_line()
 {
         return (kind == Kind::Request) ? parse_request_line() : parse_status_line();
 }
 
-bool http::MessageParser::parse_request_line()
+bool http::Message::parse_request_line()
 {
     while (cur < end && (cur - buf) < 8 && *cur != ' ')
         ++cur;
@@ -173,7 +182,7 @@ bool http::MessageParser::parse_request_line()
     return true;
 }
 
-bool http::MessageParser::parse_status_line()
+bool http::Message::parse_status_line()
 {
     if (cur + 9 > end)
         return false;
@@ -231,7 +240,7 @@ bool http::MessageParser::parse_status_line()
     return true;
 }
 
-bool http::MessageParser::parse_headers()
+bool http::Message::parse_headers()
 {
     while (cur != end && *cur != '\r') {
         bool rc = parse_header();
@@ -252,7 +261,7 @@ bool http::MessageParser::parse_headers()
     return true;
 }
 
-bool http::MessageParser::parse_header()
+bool http::Message::parse_header()
 {
     while (*cur == ' ')
         ++cur;
@@ -310,14 +319,9 @@ bool http::MessageParser::parse_header()
 }
 
 #include <string>
-bool http::MessageParser::interpret_header(const char* name, size_t name_size,
+bool http::Message::interpret_header(const char* name, size_t name_size,
                                            const char* value, size_t value_size)
 {
-    std::string name1(name, name_size);
-    std::string value1(value, value_size);
-    //printf("Name: %s\n", name1.c_str());
-    //printf("Value: %s\n", value1.c_str());
-
     const char* content_length_value = "Content-Length";
     const char* authorization_value = "Authorization";
     const char* user_agent_value = "User-Agent";
@@ -327,6 +331,7 @@ bool http::MessageParser::interpret_header(const char* name, size_t name_size,
     const char* origin_value = "Origin";
     const char* sec_websocket_protocol_value = "Sec-WebSocket-Protocol";
     const char* sec_websocket_version_value = "Sec-WebSocket-Version";
+    const char* sec_websocket_key_value = "Sec-WebSocket-Key";
     const char* sec_websocket_accept_value = "Sec-WebSocket-Accept";
     const char* transfer_encoding_value = "Transfer-Encoding";
 
@@ -363,6 +368,8 @@ bool http::MessageParser::interpret_header(const char* name, size_t name_size,
         header_sec_websocket_protocol = std::string_view {value, value_size};
     else if (name_size == 21 && strncasecmp(sec_websocket_version_value, name, 21) == 0)
         header_sec_websocket_version = std::string_view {value, value_size};
+    else if (name_size == 17 && strncasecmp(sec_websocket_key_value, name, 17) == 0)
+        header_sec_websocket_key = std::string_view {value, value_size};
     else if (name_size == 20 && strncasecmp(sec_websocket_accept_value, name, 20) == 0)
         header_sec_websocket_accept = std::string_view {value, value_size};
     else if (name_size == 17 && strncasecmp(transfer_encoding_value, name, 17) == 0) {
@@ -374,7 +381,7 @@ bool http::MessageParser::interpret_header(const char* name, size_t name_size,
     return true;
 }
 
-bool http::MessageParser::parse_body()
+bool http::Message::parse_body()
 {
     body = cur;
     message_size = (cur - buf) + content_length;

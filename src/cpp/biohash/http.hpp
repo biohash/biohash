@@ -38,14 +38,17 @@ size_t write_status_line(char* buf, size_t size, int status_code);
 // name: SP value CRLF
 size_t write_header(char* buf, size_t size, const char* name, const char* value);
 
-// A MessageParser object is constructed with a const buffer as argument.
-// Owenership is not transferred to MessageParser. MessageParser parses the
-// buffer and determines whether a complete HTTP message is contained in the
-// buffer, and reports various properties of the message in its public member
-// variables.  The properties of the message should only be used when complete
-// is true. If valid is false, after complete is true, the message did not
-// conform to the specification.
-class MessageParser {
+// writes "\r\n" to end the header and returns 2.
+size_t write_header_end(char* buf, size_t size);
+
+// A Message object is constructed from a (serialized) HTTP message in a
+// buffer. Ownership of the buffer is not transferred to Message. Message
+// parses the buffer and determines whether a complete HTTP message is
+// contained in the buffer, and reports various properties of the message in
+// its public member variables. The properties of the message should only be
+// used when complete and valid are true. If valid is false, the HTTP message
+// did not conform to the specification.
+class Message {
 public:
 
     enum class Kind {
@@ -53,7 +56,7 @@ public:
         Response
     };
 
-    MessageParser(Kind kind, const char* buf, size_t buf_size);
+    Message(Kind kind, const char* buf, size_t buf_size);
 
     Kind kind;
     const char* const buf;
@@ -86,6 +89,7 @@ public:
     std::string_view header_origin;
     std::string_view header_sec_websocket_protocol;
     std::string_view header_sec_websocket_version;
+    std::string_view header_sec_websocket_key;
     std::string_view header_sec_websocket_accept;
 
 private:
@@ -100,7 +104,6 @@ private:
                           const char* value, size_t value_size);
     bool parse_body();
 };
-
 
 }
 }
