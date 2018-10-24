@@ -57,25 +57,25 @@ TEST(websocket_5)
     osize = http::write_header_end(request + 163, 93);
     CHECK_EQUAL(osize, 2);
     
-    Message parser {Message::Kind::Request, request, 256};
+    Message msg {Message::Kind::Request, request, 256};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, 165);
-    CHECK(parser.kind == Message::Kind::Request);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.body == request + 165);
-    CHECK(parser.method == http::Method::GET);
-    CHECK(parser.request_target == "/home");
-    CHECK(parser.header_upgrade == "websocket");
-    CHECK(parser.header_connection == "Upgrade");
-    CHECK(parser.header_sec_websocket_version == "13");
-    CHECK(parser.header_sec_websocket_protocol == "chat");
-    CHECK(parser.header_sec_websocket_key.size() == 24);
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, 165);
+    CHECK(msg.kind == Message::Kind::Request);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.body == request + 165);
+    CHECK(msg.method == http::Method::GET);
+    CHECK(msg.request_target == "/home");
+    CHECK(msg.header_upgrade == "websocket");
+    CHECK(msg.header_connection == "Upgrade");
+    CHECK(msg.header_sec_websocket_version == "13");
+    CHECK(msg.header_sec_websocket_protocol == "chat");
+    CHECK(msg.header_sec_websocket_key.size() == 24);
 
-    CHECK(websocket::validate_client_handshake(parser));
+    CHECK(websocket::validate_client_handshake(msg));
     const char sec_websocket_key[] = "dGhlIHNhbXBsZSBub25jZQ==";
-    CHECK(!websocket::validate_server_handshake(parser, sec_websocket_key));
+    CHECK(!websocket::validate_server_handshake(msg, sec_websocket_key));
 }
 
 TEST(websocket_6)
@@ -89,24 +89,24 @@ TEST(websocket_6)
     osize = http::write_header_end(response + 157, 99);
     CHECK_EQUAL(osize, 2);
     
-    Message parser {Message::Kind::Response, response, 256};
+    Message msg {Message::Kind::Response, response, 256};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, 159);
-    CHECK(parser.kind == Message::Kind::Response);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.body == response + 159);
-    CHECK(parser.status_code == 101);
-    CHECK(parser.reason_phrase == "Switching Protocols");
-    CHECK(parser.header_upgrade == "websocket");
-    CHECK(parser.header_connection == "Upgrade");
-    CHECK(parser.header_sec_websocket_protocol == "chat");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, 159);
+    CHECK(msg.kind == Message::Kind::Response);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.body == response + 159);
+    CHECK(msg.status_code == 101);
+    CHECK(msg.reason_phrase == "Switching Protocols");
+    CHECK(msg.header_upgrade == "websocket");
+    CHECK(msg.header_connection == "Upgrade");
+    CHECK(msg.header_sec_websocket_protocol == "chat");
     const char accept[] = "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=";
-    CHECK(parser.header_sec_websocket_accept == accept);
+    CHECK(msg.header_sec_websocket_accept == accept);
 
-    CHECK(websocket::validate_server_handshake(parser, sec_websocket_key));
-    CHECK(!websocket::validate_client_handshake(parser));
+    CHECK(websocket::validate_server_handshake(msg, sec_websocket_key));
+    CHECK(!websocket::validate_client_handshake(msg));
 }
 
 TEST(websocket_7)
@@ -123,11 +123,11 @@ TEST(websocket_7)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
-    CHECK(parser.complete);
-    CHECK(parser.valid);
+    Message msg {Message::Kind::Request, request, size};
+    CHECK(msg.complete);
+    CHECK(msg.valid);
 
-    CHECK(!websocket::validate_client_handshake(parser));
+    CHECK(!websocket::validate_client_handshake(msg));
 }
 
 TEST(websocket_8)
@@ -141,10 +141,10 @@ TEST(websocket_8)
         "\r\n";
     size_t size = sizeof(response) - 1;
 
-    Message parser {Message::Kind::Response, response, size};
-    CHECK(parser.complete);
-    CHECK(parser.valid);
+    Message msg {Message::Kind::Response, response, size};
+    CHECK(msg.complete);
+    CHECK(msg.valid);
 
     const char sec_websocket_key[] = "dGhlIHNhbXBsZSBub25jZQ==";
-    CHECK(!websocket::validate_server_handshake(parser, sec_websocket_key));
+    CHECK(!websocket::validate_server_handshake(msg, sec_websocket_key));
 }

@@ -53,7 +53,7 @@ TEST(http_write_header)
     CHECK_EQUAL(buf[23], 0);
 }
 
-TEST(http_parser_0)
+TEST(http_msg_0)
 {
     const char request[] =
         "GET /home HTTP/1.1\r\n"
@@ -62,20 +62,20 @@ TEST(http_parser_0)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK(parser.header_user_agent == "CERN-LineMode/2.15 libwww/2.17b3");
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Request);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.body == request + size);
-    CHECK(parser.method == http::Method::GET);
-    CHECK(parser.request_target == "/home");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK(msg.header_user_agent == "CERN-LineMode/2.15 libwww/2.17b3");
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Request);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.body == request + size);
+    CHECK(msg.method == http::Method::GET);
+    CHECK(msg.request_target == "/home");
 }
 
-TEST(http_parser_1)
+TEST(http_msg_1)
 {
     const char request[] =
         "POST /home/article HTTP/1.1\r\n"
@@ -84,19 +84,19 @@ TEST(http_parser_1)
         "abc";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Request);
-    CHECK_EQUAL(parser.content_length, 3);
-    CHECK(parser.body == request + size - 3);
-    CHECK(parser.method == http::Method::POST);
-    CHECK(parser.request_target == "/home/article");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Request);
+    CHECK_EQUAL(msg.content_length, 3);
+    CHECK(msg.body == request + size - 3);
+    CHECK(msg.method == http::Method::POST);
+    CHECK(msg.request_target == "/home/article");
 }
 
-TEST(http_parser_2)
+TEST(http_msg_2)
 {
     const char request[] =
         "GET /chat HTTP/1.1\r\n"
@@ -110,42 +110,42 @@ TEST(http_parser_2)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Request);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.method == http::Method::GET);
-    CHECK(parser.request_target == "/chat");
-    CHECK(parser.header_host == "server.example.com");
-    CHECK(parser.header_upgrade == "websocket");
-    CHECK(parser.header_connection == "Upgrade");
-    CHECK(parser.header_origin == "http://example.com");
-    CHECK(parser.header_sec_websocket_protocol == "chat, superchat");
-    CHECK(parser.header_sec_websocket_version == "13");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Request);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.method == http::Method::GET);
+    CHECK(msg.request_target == "/chat");
+    CHECK(msg.header_host == "server.example.com");
+    CHECK(msg.header_upgrade == "websocket");
+    CHECK(msg.header_connection == "Upgrade");
+    CHECK(msg.header_origin == "http://example.com");
+    CHECK(msg.header_sec_websocket_protocol == "chat, superchat");
+    CHECK(msg.header_sec_websocket_version == "13");
 }
 
-TEST(http_parser_3)
+TEST(http_msg_3)
 {
     const char response[] =
         "HTTP/1.1 200 OK\r\n"
         "\r\n";
     size_t size = sizeof(response) - 1;
 
-    Message parser {Message::Kind::Response, response, size};
+    Message msg {Message::Kind::Response, response, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Response);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.status_code == 200);
-    CHECK(parser.reason_phrase == "OK");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Response);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.status_code == 200);
+    CHECK(msg.reason_phrase == "OK");
 }
 
-TEST(http_parser_4)
+TEST(http_msg_4)
 {
     const char response[] =
         "HTTP/1.1 101 Switching Protocols\r\n"
@@ -156,22 +156,22 @@ TEST(http_parser_4)
         "\r\n";
     size_t size = sizeof(response) - 1;
 
-    Message parser {Message::Kind::Response, response, size};
+    Message msg {Message::Kind::Response, response, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Response);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.status_code == 101);
-    CHECK(parser.reason_phrase == "Switching Protocols");
-    CHECK(parser.header_upgrade == "websocket");
-    CHECK(parser.header_connection == "Upgrade");
-    CHECK(parser.header_sec_websocket_accept == "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=");
-    CHECK(parser.header_sec_websocket_protocol == "chat");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Response);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.status_code == 101);
+    CHECK(msg.reason_phrase == "Switching Protocols");
+    CHECK(msg.header_upgrade == "websocket");
+    CHECK(msg.header_connection == "Upgrade");
+    CHECK(msg.header_sec_websocket_accept == "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=");
+    CHECK(msg.header_sec_websocket_protocol == "chat");
 }
 
-TEST(http_parser_5)
+TEST(http_msg_5)
 {
     const char response[] =
         "HTTP/1.1  101   Switching Protocols\r\n"
@@ -180,20 +180,20 @@ TEST(http_parser_5)
         "\r\n";
     size_t size = sizeof(response) - 1;
 
-    Message parser {Message::Kind::Response, response, size};
+    Message msg {Message::Kind::Response, response, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Response);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.status_code == 101);
-    CHECK(parser.reason_phrase == "Switching Protocols");
-    CHECK(parser.header_upgrade == "websocket");
-    CHECK(parser.header_connection == "Upgrade");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Response);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.status_code == 101);
+    CHECK(msg.reason_phrase == "Switching Protocols");
+    CHECK(msg.header_upgrade == "websocket");
+    CHECK(msg.header_connection == "Upgrade");
 }
 
-TEST(http_parser_6)
+TEST(http_msg_6)
 {
     const char request[] =
         "PUT         /home/article    HTTP/1.1\r\n"
@@ -202,19 +202,19 @@ TEST(http_parser_6)
         "abc";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Request);
-    CHECK_EQUAL(parser.content_length, 3);
-    CHECK(parser.body == request + size - 3);
-    CHECK(parser.method == http::Method::PUT);
-    CHECK(parser.request_target == "/home/article");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Request);
+    CHECK_EQUAL(msg.content_length, 3);
+    CHECK(msg.body == request + size - 3);
+    CHECK(msg.method == http::Method::PUT);
+    CHECK(msg.request_target == "/home/article");
 }
 
-TEST(http_parser_7)
+TEST(http_msg_7)
 {
     const char request[] =
         "DELETE /home/article%45 HTTP/1.1\r\n"
@@ -222,19 +222,19 @@ TEST(http_parser_7)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Request);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.body == request + size);
-    CHECK(parser.method == http::Method::DELETE);
-    CHECK(parser.request_target == "/home/article%45");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Request);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.body == request + size);
+    CHECK(msg.method == http::Method::DELETE);
+    CHECK(msg.request_target == "/home/article%45");
 }
 
-TEST(http_parser_8)
+TEST(http_msg_8)
 {
     const char request[] =
         "TRACE / HTTP/1.1\r\n"
@@ -242,54 +242,54 @@ TEST(http_parser_8)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Request);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.body == request + size);
-    CHECK(parser.method == http::Method::TRACE);
-    CHECK(parser.request_target == "/");
-    CHECK(parser.header_user_agent.empty());
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Request);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.body == request + size);
+    CHECK(msg.method == http::Method::TRACE);
+    CHECK(msg.request_target == "/");
+    CHECK(msg.header_user_agent.empty());
 }
 
-TEST(http_parser_9)
+TEST(http_msg_9)
 {
     const char request[] =
         "HEAD // HTTP/1.1\r\n"
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size);
-    CHECK(parser.kind == Message::Kind::Request);
-    CHECK_EQUAL(parser.content_length, 0);
-    CHECK(parser.body == request + size);
-    CHECK(parser.method == http::Method::HEAD);
-    CHECK(parser.request_target == "//");
-    CHECK(!parser.header_user_agent.data());
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size);
+    CHECK(msg.kind == Message::Kind::Request);
+    CHECK_EQUAL(msg.content_length, 0);
+    CHECK(msg.body == request + size);
+    CHECK(msg.method == http::Method::HEAD);
+    CHECK(msg.request_target == "//");
+    CHECK(!msg.header_user_agent.data());
 }
 
-TEST(http_parser_10)
+TEST(http_msg_10)
 {
     const char request[] =
         "CONNECT /a HTTP/1.1\r\n"
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK(parser.method == http::Method::CONNECT);
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK(msg.method == http::Method::CONNECT);
 }
 
-TEST(http_parser_11)
+TEST(http_msg_11)
 {
     const char request[] =
         "OPTIONS /,. HTTP/1.1\r\n"
@@ -297,42 +297,42 @@ TEST(http_parser_11)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK(parser.method == http::Method::OPTIONS);
-    CHECK(parser.request_target == "/,.");
-    CHECK(parser.header_authorization == "Basic YWxhZGRpbjpvcGVuc2VzYW1l");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK(msg.method == http::Method::OPTIONS);
+    CHECK(msg.request_target == "/,.");
+    CHECK(msg.header_authorization == "Basic YWxhZGRpbjpvcGVuc2VzYW1l");
 }
 
-TEST(http_parser_12)
+TEST(http_msg_12)
 {
     const char request[] =
         "NONE /home HTTP/1.1\r\n"
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(!parser.complete);
-    CHECK(!parser.valid);
+    CHECK(!msg.complete);
+    CHECK(!msg.valid);
 }
 
-TEST(http_parser_13)
+TEST(http_msg_13)
 {
     const char request[] =
         "GET /home HTTP/1.0\r\n"
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(!parser.complete);
-    CHECK(!parser.valid);
+    CHECK(!msg.complete);
+    CHECK(!msg.valid);
 }
 
-TEST(http_parser_14)
+TEST(http_msg_14)
 {
     const char request[] =
         "GET /home HTTP/1.1\r\n"
@@ -340,13 +340,13 @@ TEST(http_parser_14)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(!parser.complete);
-    CHECK(!parser.valid);
+    CHECK(!msg.complete);
+    CHECK(!msg.valid);
 }
 
-TEST(http_parser_15)
+TEST(http_msg_15)
 {
     const char request[] =
         "GET / HTTP/1.1\r\n"
@@ -355,17 +355,17 @@ TEST(http_parser_15)
         "\r\n";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK(parser.method == http::Method::GET);
-    CHECK(parser.request_target == "/");
-    CHECK(parser.header_authorization == "Something");
-    CHECK(parser.header_user_agent == "agent");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK(msg.method == http::Method::GET);
+    CHECK(msg.request_target == "/");
+    CHECK(msg.header_authorization == "Something");
+    CHECK(msg.header_user_agent == "agent");
 }
 
-TEST(http_parser_16)
+TEST(http_msg_16)
 {
     const char request[] =
         "POST /home/article HTTP/1.1\r\n"
@@ -374,14 +374,14 @@ TEST(http_parser_16)
         "abcdefg";
     size_t size = sizeof(request) - 1;
 
-    Message parser {Message::Kind::Request, request, size};
+    Message msg {Message::Kind::Request, request, size};
 
-    CHECK(parser.complete);
-    CHECK(parser.valid);
-    CHECK_EQUAL(parser.message_size, size - 4);
-    CHECK(parser.kind == Message::Kind::Request);
-    CHECK_EQUAL(parser.content_length, 3);
-    CHECK(parser.body == request + size - 7);
-    CHECK(parser.method == http::Method::POST);
-    CHECK(parser.request_target == "/home/article");
+    CHECK(msg.complete);
+    CHECK(msg.valid);
+    CHECK_EQUAL(msg.message_size, size - 4);
+    CHECK(msg.kind == Message::Kind::Request);
+    CHECK_EQUAL(msg.content_length, 3);
+    CHECK(msg.body == request + size - 7);
+    CHECK(msg.method == http::Method::POST);
+    CHECK(msg.request_target == "/home/article");
 }
